@@ -1,0 +1,1 @@
+# assistedinstaller ansible module
