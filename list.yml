@@ -1,0 +1,18 @@
+- name: Test list_clusters
+  hosts: localhost
+  tasks:
+
+    - name: Success list_clusters
+      list_clusters:
+      register: list_clusters
+
+    - name: Debug Success
+      debug:
+        var: list_clusters
+
+    - name: Fail list_clusters
+      list_clusters:
+        fail: true
+      register: list_clusters
+      ignore_errors: true
+
