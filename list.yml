@@ -4,6 +4,7 @@
 
     - name: Success list_clusters
       list_clusters:
+        with_hosts: true
       register: list_clusters
 
     - name: Debug Success
