@@ -1,0 +1,25 @@
+- name: Test clusters
+  hosts: localhost
+  tasks:
+
+    - name: Get a list of clusters with hosts
+      clusters:
+        action: list
+        with_hosts: true
+      register: list_clusters
+
+    - name: List clusters with hosts
+      debug:
+        var: list_clusters
+
+    - name: Delete a cluster
+      clusters:
+        action: delete
+        cluster_id: "{{ my_cluster_id }}"
+      register: delete_cluster
+      when: my_cluster_id is defined
+
+    - name: List deleted cluster
+      debug:
+        var: delete_cluster
+      when: delete_cluster is defined
