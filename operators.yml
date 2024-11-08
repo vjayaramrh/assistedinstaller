@@ -1,0 +1,10 @@
+- name: List supported operators
+  hosts: localhost
+  tasks:
+    - name: List supported operators
+      operators:
+      register: operators
+
+    - name: Print listed supported operators
+      ansible.builtin.debug:
+        var: operators
