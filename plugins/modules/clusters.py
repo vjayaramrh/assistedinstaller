@@ -63,7 +63,7 @@ API_VERSION = "v2"
 API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
 
 # add additional query parameters to the query_params_list
-QUERY_PARAMS_LIST = ["with_hosts"]
+QUERY_PARAMS_LIST = ["with_hosts", "limit"]
 
 def run_module():
     module_args = dict(
@@ -71,6 +71,7 @@ def run_module():
         cluster_id=dict(type="str", required=False),
         # any API query parameters may have to be added here
         with_hosts=dict(type="bool", required=False, default=False),
+        limit=dict(type="int", required=False, default=0),
     )
     token = os.environ.get('AI_API_TOKEN')
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=False)
@@ -108,6 +109,25 @@ def run_module():
             module.fail_json(msg=f"Error deleting cluster_id: {module.params.get('cluster_id')}", **result)
         
         result = dict(changed=True, clusters=[])
+
+    # List events
+    elif module.params.get('action') == "list_events":
+        list_params = {}
+        for k in QUERY_PARAMS_LIST:
+            val = module.params.get(k)
+            if val:
+                list_params = list_params | { k: val }
+        if not module.params.get('cluster_id'):
+            module.fail_json(msg="cluster_id is required for cluster-events action")
+
+        response = requests.get(f"{API_URL}/events", params=list_params, headers=headers)
+        if not response.ok:
+            result = dict(changed=True, response=response.text)
+            module.fail_json(msg=f"Error listing the specified number of events for a given cluster cluster_id: {module.params.get('cluster_id')}", **result)
+        else:
+            result = dict(data=response.json())
+
+        result = dict(changed=True, events=[])
 
     module.exit_json(**result)
 

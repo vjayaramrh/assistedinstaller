@@ -23,3 +23,16 @@
       debug:
         var: delete_cluster
       when: delete_cluster is defined
+
+    - name: List the specified number of events for a given cluster ID
+      clusters:
+        action: list_events
+        limit: "{{ event_limit }}" 
+        cluster_id: "{{ my_cluster_id }}"
+      register: events
+      when: my_cluster_id is defined and event_limit is defined
+
+    - name: Print the specified number of events for a given cluster ID
+      debug:
+        msg: "{{ events }}"
+      when: event_limit is defined
