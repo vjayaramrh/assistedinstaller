@@ -1,0 +1,14 @@
+- name: Test cluster events
+  hosts: localhost
+  tasks:
+
+    - name: Get list of events for a cluster
+      events:
+        action: list
+        cluster_id: "{{ my_cluster_id }}"
+        limit: "{{ cluster_events_limit | default(10) }}"
+      register: list_cluster_events
+
+    - name: Print cluster events list
+      debug:
+        var: list_cluster_events
