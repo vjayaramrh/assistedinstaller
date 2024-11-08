@@ -10,7 +10,9 @@
         order: "{{ cluster_events_order | default('ascending') }}"
         offset: "{{ cluster_events_offset | default(0) }}"
       register: list_cluster_events
+      when: my_cluster_id is defined
 
     - name: Print cluster events list
       debug:
         var: list_cluster_events
+      when: list_cluster_events is defined

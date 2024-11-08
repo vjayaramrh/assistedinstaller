@@ -117,6 +117,9 @@ def run_module():
 
     # List cluster events
     if module.params.get('action') == "list":
+        if not module.params.get('cluster_id'):
+            module.fail_json(msg="cluster_id is required for list cluster events action")
+        
         list_params = {}
         for k in QUERY_PARAMS_LIST:
             val = module.params.get(k)
