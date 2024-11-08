@@ -9,7 +9,7 @@
       register: list_clusters
 
     - name: List clusters with hosts
-      debug:
+      ansible.builtin.debug:
         var: list_clusters
 
     - name: Delete a cluster
@@ -20,6 +20,18 @@
       when: my_cluster_id is defined
 
     - name: List deleted cluster
-      debug:
+      ansible.builtin.debug:
         var: delete_cluster
       when: delete_cluster is defined
+
+    - name: Retrieve a cluster
+      vars:
+      clusters:
+        action: get
+        with_hosts: true
+        cluster_id: 1ac5ec14-dc29-4c34-8013-29f8de0ccc00
+      register: get_cluster
+
+    - name: List cluster details
+      ansible.builtin.debug:
+        var: get_cluster
