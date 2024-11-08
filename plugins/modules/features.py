@@ -39,7 +39,7 @@ options:
     type: string
 
   external_platform:
-    description: Include hosts in the returned list
+    description: External platform name when platform_type is external
     default: None
     required: True
     type: string
@@ -60,7 +60,7 @@ EXAMPLES = r"""
 RETURN = r"""
 features:
   description: A list of supported OpenShift features
-  type: list
+  type: dict
   returned: always
   sample: { "CLUSTER_MANAGED_NETWORKING": "supported",
             "CNV": "supported",
