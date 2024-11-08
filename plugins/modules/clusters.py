@@ -108,7 +108,14 @@ def run_module():
             module.fail_json(msg=f"Error deleting cluster_id: {module.params.get('cluster_id')}", **result)
         
         result = dict(changed=True, clusters=[])
-
+    # Retrieve list of OpenShift supported versions
+    elif module.params.get('action') == "list-openshift-versions":
+        response = requests.get(f"{API_URL}/openshift-versions", headers=headers)
+        if not response.ok:
+            result = dict(changed=True, response=response.text)
+            module.fail_json(msg="Error retrieving Openshift supported versions", **result)
+        else:
+            result = dict(data=response.json())
     module.exit_json(**result)
 
 

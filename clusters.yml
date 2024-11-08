@@ -23,3 +23,17 @@
       debug:
         var: delete_cluster
       when: delete_cluster is defined
+
+    - name: Retrieve list of OpenShift supported versions
+      clusters:
+        action: list-openshift-versions
+      register: openshift_versions
+
+    - name: Print list of OpenShift supported versions
+      debug:
+        msg: "{{ openshift_versions }}"
+
+    - name: Save the list of OpenShift supported versions to a file
+      copy:
+        content: "{{ openshift_versions.data }}"
+        dest: "./openshift_versions.json"
