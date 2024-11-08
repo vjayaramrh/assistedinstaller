@@ -21,14 +21,14 @@ description: Interact with cluster events through the AssistedInstall API
 
 options:
     action:
-        description: The action to perform
+        description: The action to perform.
         required: false
         default: "list"
     cluster_id:
-        description: The cluster ID to perform the action on
+        description: The cluster ID to perform the action on.
         required: false
     limit:
-        description: The maximum number of records/events to retrieve
+        description: The maximum number of records/events to retrieve.
         default: 10
         required: false
         type: integer
@@ -37,6 +37,10 @@ options:
         default: ascending
         required: false
         type: string
+    offset:
+        description: Number of events to skip before events retrieval.
+        required: false
+        type: integer
 
 author:
     - Akash Gopalakrishnan (@agopalak)
@@ -49,6 +53,8 @@ EXAMPLES = r"""
     action: list
     cluster_id: "deadmeat-dead-meat-dead-meatdeadmeat"
     limit: 50
+    order: descending
+    offset: 10
 """
 
 RETURN = r"""
@@ -88,7 +94,7 @@ API_VERSION = "v2"
 API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
 
 # add additional query parameters to the query_params_list
-QUERY_PARAMS_LIST = ["limit", "order"]
+QUERY_PARAMS_LIST = ["limit", "order", "offset"]
 
 def run_module():
     module_args = dict(
@@ -96,6 +102,7 @@ def run_module():
         cluster_id=dict(type="str", required=False),
         # any API query parameters may have to be added here
         limit=dict(type="int", required=False, default=10),
+        offset=dict(type="int", required=False, default=0),        
         order=dict(type="str",required=False, default="ascending"),
     )
 
