@@ -94,7 +94,7 @@ API_VERSION = "v2"
 API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
 
 # add additional query parameters to the query_params_list
-QUERY_PARAMS_LIST = ["limit", "order", "offset"]
+QUERY_PARAMS_LIST = ["cluster_id","limit", "order", "offset"]
 
 def run_module():
     module_args = dict(
@@ -123,7 +123,7 @@ def run_module():
             if val:
                 list_params = list_params | { k: val }
 
-        response = requests.get(f"{API_URL}/events?cluster_id={module.params.get('cluster_id')}", params=list_params, headers=headers)
+        response = requests.get(f"{API_URL}/events", params=list_params, headers=headers)
 
         if not response.ok:
             result = dict(changed=True, response=response.text)
