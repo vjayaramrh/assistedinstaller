@@ -1,0 +1,39 @@
+---
+name: Test modules
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+env:
+  NAMESPACE: openshift_lab
+  COLLECTION_NAME: assisted_installer
+
+jobs:
+  sanity:
+    name: Sanity ${{ matrix.ansible }}
+    strategy:
+      matrix:
+        ansible:
+          - stable-2.17
+          - devel
+    runs-on: ubuntu-24.04
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install ansible-base (${{ matrix.ansible }})
+        run: pip install https://github.com/ansible/ansible/archive/${{ matrix.ansible }}.tar.gz --disable-pip-version-check
+
+      - name: Run sanity tests
+        run: ansible-test sanity -v --docker --color --coverage
+        working-directory: ./ansible_collections/${{ env.NAMESPACE }}/${{ env.COLLECTION_NAME }}
