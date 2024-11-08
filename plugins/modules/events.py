@@ -21,9 +21,9 @@ description: Interact with cluster events through the AssistedInstall API
 
 options:
     action:
-      description: The action to perform
-      required: false
-      default: "list"
+        description: The action to perform
+        required: false
+        default: "list"
     cluster_id:
         description: The cluster ID to perform the action on
         required: false
@@ -32,6 +32,11 @@ options:
         default: 10
         required: false
         type: integer
+    order:
+        description: Retrieval order for cluster events based on time of events.
+        default: ascending
+        required: false
+        type: string
 
 author:
     - Akash Gopalakrishnan (@agopalak)
@@ -83,7 +88,7 @@ API_VERSION = "v2"
 API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
 
 # add additional query parameters to the query_params_list
-QUERY_PARAMS_LIST = ["limit"]
+QUERY_PARAMS_LIST = ["limit", "order"]
 
 def run_module():
     module_args = dict(
@@ -91,6 +96,7 @@ def run_module():
         cluster_id=dict(type="str", required=False),
         # any API query parameters may have to be added here
         limit=dict(type="int", required=False, default=10),
+        order=dict(type="str",required=False, default="ascending"),
     )
 
     token = os.environ.get('AI_API_TOKEN')
