@@ -68,7 +68,7 @@ API_VERSION = "v2"
 API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
 
 # add additional query parameters to the query_params_list
-QUERY_PARAMS_LIST = ["with_hosts"]
+QUERY_PARAMS_LIST = ["with_hosts","cluster_id"]
 
 def run_module():
     module_args = dict(
@@ -123,8 +123,7 @@ def run_module():
                 list_params = list_params | { k: val }
 
         cluster_id = module.params.get('cluster_id')
-        request_url = f"{API_URL}/clusters/{cluster_id}"
-
+        request_url = f"{API_URL}/clusters"
 
         if not module.params.get('cluster_id'):
             module.fail_json(msg="cluster_id is required for retrieve action")

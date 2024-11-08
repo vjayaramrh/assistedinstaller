@@ -25,13 +25,14 @@
       when: delete_cluster is defined
 
     - name: Retrieve a cluster
-      vars:
       clusters:
         action: get
-        with_hosts: true
-        cluster_id: 1ac5ec14-dc29-4c34-8013-29f8de0ccc00
-      register: get_cluster
+        cluster_id: "{{ my_cluster_id }}"
+      register: cluster_details
+      when: my_cluster_id is defined
 
     - name: List cluster details
       ansible.builtin.debug:
         var: get_cluster
+      when: cluster_details is defined
+...
