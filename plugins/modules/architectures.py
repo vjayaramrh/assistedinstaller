@@ -22,7 +22,6 @@ description: Query supported architectures for a given OpenShift version
 options:
   openshift_version:
     description: Version of OpenShift
-    default: None
     required: True
     type: string
 
