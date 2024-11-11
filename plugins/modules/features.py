@@ -22,26 +22,25 @@ description: Query supported features for a given OpenShift version
 options:
   openshift_version:
     description: Version of OpenShift
-    default: None
     required: True
     type: string
 
   cpu_architecture:
-    description: The CPU architecture of the OpenShift version (e.g. x86_64, aarch64, arm64, ppc64le, s390x, multi)
-    default: None
+    description: The CPU architecture of the OpenShift version
     required: False
+    choices: [x86_64, aarch64, arm64, ppc64le, s390x, multi]
+    default: x86_64
     type: string
 
   platform_type:
-    description: The provider platform type (e.g. baremetal, none, nutanix, vsphere, external)
-    default: None
-    required: True
+    description: The provider platform type
+    required: False
+    choices: [baremetal, none, nutanix, vsphere, external]
     type: string
 
   external_platform:
     description: External platform name when platform_type is external
-    default: None
-    required: True
+    required: False
     type: string
 
 author:
@@ -93,8 +92,8 @@ QUERY_PARAMS_LIST = ["openshift_version", "cpu_architecture", "platform_type", "
 def run_module():
     module_args = dict(
         openshift_version = dict(type="str", required=True),
-        cpu_architecture = dict(type="str", required=False),
-        platform_type = dict(type="str", required=False),
+        cpu_architecture = dict(type="str", required=False, default="x86_64", choices=["x86_64", "aarch64", "arm64", "ppc64le", "s390x", "multi"]),
+        platform_type = dict(type="str", required=False, choices=["baremetal", "none", "nutanix", "vsphere", "external"]),
         external_platform_name = dict(type="str", required=False)
     )
 
