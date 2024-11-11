@@ -3,9 +3,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import os
-import requests
-
 
 __metaclass__ = type
 
@@ -24,9 +21,11 @@ options:
       description: The action to perform (list, create, delete)
       required: false
       default: "list"
+      type: str
     cluster_id:
         description: The cluster ID to perform the action on
         required: false
+        type: str
     with_hosts:
         description: Include hosts in the returned list
         default: false
@@ -40,7 +39,7 @@ author:
 EXAMPLES = r"""
 # Use argument
 - name: List clusters
-  clusters
+  clusters:
     action: list
 
 - name: Delete cluster
@@ -57,7 +56,19 @@ clusters:
     sample: []
 """
 
+import os
+import traceback
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import missing_required_lib
+
+try:
+    import requests
+except ImportError:
+    HAS_REQUESTS = False
+    REQUESTS_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_REQUESTS = True
+    REQUESTS_IMPORT_ERROR = None
 
 API_VERSION = "v2"
 API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
@@ -65,7 +76,9 @@ API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
 # add additional query parameters to the query_params_list
 QUERY_PARAMS_LIST = ["with_hosts"]
 
+
 def run_module():
+
     module_args = dict(
         action=dict(type="str", required=False, default="list"),
         cluster_id=dict(type="str", required=False),
@@ -74,6 +87,9 @@ def run_module():
     )
     token = os.environ.get('AI_API_TOKEN')
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=False)
+
+    # Fail if requests is not installed
+    module.fail_json(msg=missing_required_lib('requests'), exception=REQUESTS_IMPORT_ERROR)
 
     # Set headers
     headers = {
@@ -86,7 +102,7 @@ def run_module():
         for k in QUERY_PARAMS_LIST:
             val = module.params.get(k)
             if val:
-                list_params = list_params | { k: val }
+                list_params = list_params | {k: val}
 
         response = requests.get(f"{API_URL}/clusters", params=list_params, headers=headers)
 
@@ -95,7 +111,7 @@ def run_module():
             module.fail_json(msg="Error listing clusters", **result)
 
         result = dict(clusters=response.json())
-    
+
     # Delete cluster
     elif module.params.get('action') == "delete":
         if not module.params.get('cluster_id'):
@@ -106,7 +122,7 @@ def run_module():
         if response.status_code != 204:
             result = dict(response=response.text)
             module.fail_json(msg=f"Error deleting cluster_id: {module.params.get('cluster_id')}", **result)
-        
+
         result = dict(changed=True, clusters=[])
 
     module.exit_json(**result)
