@@ -1,2 +1,3 @@
+plugins/modules/architectures.py validate-modules:missing-gplv3-license # ignore gplv3
 plugins/modules/clusters.py validate-modules:missing-gplv3-license # ignore gplv3
 plugins/modules/features.py validate-modules:missing-gplv3-license # ignore gplv3
