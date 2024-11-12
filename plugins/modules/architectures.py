@@ -73,7 +73,7 @@ def run_module():
 
     # Fail if requests is not installed
     if not HAS_REQUESTS:
-      module.fail_json(msg=missing_required_lib('requests'), exception=REQUESTS_IMPORT_ERROR)
+        module.fail_json(msg=missing_required_lib('requests'), exception=REQUESTS_IMPORT_ERROR)
 
     # Set headers
     headers = {
