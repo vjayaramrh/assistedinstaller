@@ -1,0 +1,11 @@
+- name: Test architectures
+  hosts: localhost
+  tasks:
+    - name: Query OpenShift architectures
+      architectures:
+        openshift_version: 4.16.19
+      register: architectures_result
+
+    - name: Print supported architectures
+      debug:
+        var: architectures_result
