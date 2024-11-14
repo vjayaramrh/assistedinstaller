@@ -58,7 +58,9 @@ EXAMPLES = r"""
     limit: 50
     order: descending
     offset: 10
-    severities: [ "critical", "info" ]
+    severities:
+        - "critical"
+        - "info"
 """
 
 RETURN = r"""
@@ -140,7 +142,7 @@ def run_module():
     # List cluster events
     if module.params.get('action') == "list":
         if not module.params.get('cluster_id'):
-            module.fail_json(msg="cluster_id is required for list cluster events action") 
+            module.fail_json(msg="cluster_id is required for list cluster events action")
         list_params = {}
         for k in QUERY_PARAMS_LIST:
             val = module.params.get(k)
@@ -149,7 +151,7 @@ def run_module():
                     list_params = list_params | {k: ",".join(val)}
                 else:
                     list_params = list_params | {k: val}
-            
+      
         response = requests.get(f"{API_URL}/events", params=list_params, headers=headers)
 
         if not response.ok:
