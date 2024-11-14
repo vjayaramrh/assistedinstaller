@@ -30,7 +30,7 @@ operators:
     description: List of supported operators
     type: list
     returned: always
-    sample: []
+    sample: ["lso", "odf", "cnv", "lvm", "mce"]
 """
 
 import os
