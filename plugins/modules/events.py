@@ -3,10 +3,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import os
-import requests
-
-
 __metaclass__ = type
 
 DOCUMENTATION = r"""
@@ -26,10 +22,9 @@ options:
         default: "list"
     cluster_id:
         description: The cluster ID to perform the action on.
-        required: false
+        type: string
     limit:
         description: The maximum number of records/events to retrieve.
-        default: 10
         required: false
         type: integer
     order:
@@ -37,10 +32,19 @@ options:
         default: ascending
         required: false
         type: string
+        choices: [ ascending, descending ]
     offset:
         description: Number of events to skip before events retrieval.
         required: false
         type: integer
+        default: 0
+    severities:
+        description: Retrieve events mapped to the severity value.
+        required: false
+        type: array
+        items:
+            type: string
+        choices: [ info, warning, error, critical ]
 
 author:
     - Akash Gopalakrishnan (@agopalak)
@@ -55,6 +59,7 @@ EXAMPLES = r"""
     limit: 50
     order: descending
     offset: 10
+    severities: critical, info
 """
 
 RETURN = r"""
@@ -88,13 +93,25 @@ cluster_events:
         ]
 """
 
+import os
+import traceback
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import missing_required_lib
+
+try:
+    import requests
+except ImportError:
+    HAS_REQUESTS = False
+    REQUESTS_IMPORT_ERROR = traceback.format_exc()
+else:
+    HAS_REQUESTS = True
+    REQUESTS_IMPORT_ERROR = None
 
 API_VERSION = "v2"
 API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
 
 # add additional query parameters to the query_params_list
-QUERY_PARAMS_LIST = ["cluster_id","limit", "order", "offset"]
+QUERY_PARAMS_LIST = ["cluster_id","limit", "order", "offset", "severities"]
 
 def run_module():
     module_args = dict(
@@ -103,11 +120,15 @@ def run_module():
         # any API query parameters may have to be added here
         limit=dict(type="int", required=False, default=10),
         offset=dict(type="int", required=False, default=0),        
-        order=dict(type="str",required=False, default="ascending"),
+        order=dict(type="str",required=False, default="ascending", choices=["ascending", "descending"]),
+        severities=dict(type="list",required=False, choices=["info", "warning", "error", "critical"]),
     )
 
     token = os.environ.get('AI_API_TOKEN')
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=False)
+
+    # Fail if requests is not installed
+    module.fail_json(msg=missing_required_lib('requests'), exception=REQUESTS_IMPORT_ERROR)
 
     # Set headers
     headers = {
@@ -124,8 +145,11 @@ def run_module():
         for k in QUERY_PARAMS_LIST:
             val = module.params.get(k)
             if val:
-                list_params = list_params | { k: val }
-
+                if isinstance(val, list):
+                    list_params = list_params | {k: ",".join(val)}
+                else:
+                    list_params = list_params | {k: val}
+            
         response = requests.get(f"{API_URL}/events", params=list_params, headers=headers)
 
         if not response.ok:

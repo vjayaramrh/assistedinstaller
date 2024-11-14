@@ -6,9 +6,10 @@
       events:
         action: list
         cluster_id: "{{ my_cluster_id }}"
-        limit: "{{ cluster_events_limit | default(10) }}"
+        limit: "{{ cluster_events_limit | default(omit) }}"
         order: "{{ cluster_events_order | default('ascending') }}"
         offset: "{{ cluster_events_offset | default(0) }}"
+        severities: "{{ cluster_events_severities | default(omit) }}"
       register: list_cluster_events
       when: my_cluster_id is defined
 
