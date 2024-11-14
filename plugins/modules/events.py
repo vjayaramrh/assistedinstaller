@@ -43,8 +43,6 @@ options:
         description: Retrieve events mapped to the severity value.
         required: false
         type: list
-        items:
-            type: string
         choices: [ info, warning, error, critical ]
 
 author:
@@ -60,7 +58,7 @@ EXAMPLES = r"""
     limit: 50
     order: descending
     offset: 10
-    severities: critical, info
+    severities: [ "critical", "info" ]
 """
 
 RETURN = r"""
@@ -130,7 +128,8 @@ def run_module():
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=False)
 
     # Fail if requests is not installed
-    module.fail_json(msg=missing_required_lib('requests'), exception=REQUESTS_IMPORT_ERROR)
+    if not HAS_REQUESTS:
+        module.fail_json(msg=missing_required_lib('requests'), exception=REQUESTS_IMPORT_ERROR)
 
     # Set headers
     headers = {
@@ -141,8 +140,7 @@ def run_module():
     # List cluster events
     if module.params.get('action') == "list":
         if not module.params.get('cluster_id'):
-            module.fail_json(msg="cluster_id is required for list cluster events action")
-        
+            module.fail_json(msg="cluster_id is required for list cluster events action") 
         list_params = {}
         for k in QUERY_PARAMS_LIST:
             val = module.params.get(k)
