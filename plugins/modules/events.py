@@ -20,28 +20,29 @@ options:
         description: The action to perform.
         required: false
         default: "list"
+        type: str
     cluster_id:
         description: The cluster ID to perform the action on.
-        type: string
+        type: str
     limit:
         description: The maximum number of records/events to retrieve.
         required: false
-        type: integer
+        type: int
     order:
         description: Retrieval order for cluster events based on time of events.
         default: ascending
         required: false
-        type: string
+        type: str
         choices: [ ascending, descending ]
     offset:
         description: Number of events to skip before events retrieval.
         required: false
-        type: integer
+        type: int
         default: 0
     severities:
         description: Retrieve events mapped to the severity value.
         required: false
-        type: array
+        type: list
         items:
             type: string
         choices: [ info, warning, error, critical ]
@@ -53,7 +54,7 @@ author:
 EXAMPLES = r"""
 # Use argument
 - name: List cluster events
-  events
+  events:
     action: list
     cluster_id: "deadmeat-dead-meat-dead-meatdeadmeat"
     limit: 50
@@ -111,17 +112,18 @@ API_VERSION = "v2"
 API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
 
 # add additional query parameters to the query_params_list
-QUERY_PARAMS_LIST = ["cluster_id","limit", "order", "offset", "severities"]
+QUERY_PARAMS_LIST = ["cluster_id", "limit", "order", "offset", "severities"]
+
 
 def run_module():
     module_args = dict(
         action=dict(type="str", required=False, default="list"),
         cluster_id=dict(type="str", required=False),
         # any API query parameters may have to be added here
-        limit=dict(type="int", required=False, default=10),
-        offset=dict(type="int", required=False, default=0),        
-        order=dict(type="str",required=False, default="ascending", choices=["ascending", "descending"]),
-        severities=dict(type="list",required=False, choices=["info", "warning", "error", "critical"]),
+        limit=dict(type="int", required=False),
+        offset=dict(type="int", required=False, default=0),
+        order=dict(type="str", required=False, default="ascending", choices=["ascending", "descending"]),
+        severities=dict(type="list", required=False, choices=["info", "warning", "error", "critical"]),
     )
 
     token = os.environ.get('AI_API_TOKEN')
@@ -156,7 +158,7 @@ def run_module():
             result = dict(changed=True, response=response.text)
             module.fail_json(msg="Error listing cluster events", **result)
 
-        result = dict(changed=False,cluster_events=response.json())
+        result = dict(changed=False, cluster_events=response.json())
 
     module.exit_json(**result)
 
