@@ -43,6 +43,7 @@ options:
         description: Retrieve events mapped to the severity value.
         required: false
         type: list
+        elements: str
         choices: [ info, warning, error, critical ]
 
 author:
@@ -151,7 +152,7 @@ def run_module():
                     list_params = list_params | {k: ",".join(val)}
                 else:
                     list_params = list_params | {k: val}
-      
+
         response = requests.get(f"{API_URL}/events", params=list_params, headers=headers)
 
         if not response.ok:
