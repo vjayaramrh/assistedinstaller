@@ -20,8 +20,7 @@ options:
         description: JSON data for AssistedInstaller
         type: dict
         required: true
-
-notes: AI_API_TOKEN and AI_PULL_SECRET env variables must be set
+    ## Note: AI_API_TOKEN and AI_PULL_SECRET env variables must be set
 
 author:
     - Daniel Kostecki (@dkosteck)
