@@ -60,6 +60,7 @@ else:
 API_VERSION = "v2"
 API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
 
+
 def run_module():
     module_args = dict(
         data=dict(type="dict", required=True),
@@ -70,7 +71,7 @@ def run_module():
 
     # Fail if requests is not installed
     if not HAS_REQUESTS:
-       module.fail_json(msg=missing_required_lib('requests'), exception=REQUESTS_IMPORT_ERROR) 
+        module.fail_json(msg=missing_required_lib('requests'), exception=REQUESTS_IMPORT_ERROR)
 
     # Set headers
     headers = {
