@@ -59,9 +59,7 @@ EXAMPLES = r"""
     limit: 50
     order: descending
     offset: 10
-    severities:
-        - "critical"
-        - "info"
+    severities: [ "critical", "info"]
 """
 
 RETURN = r"""
@@ -124,7 +122,7 @@ def run_module():
         limit=dict(type="int", required=False),
         offset=dict(type="int", required=False, default=0),
         order=dict(type="str", required=False, default="ascending", choices=["ascending", "descending"]),
-        severities=dict(type="list", required=False, choices=["info", "warning", "error", "critical"]),
+        severities=dict(type="list", elements="str", required=False, choices=["info", "warning", "error", "critical"]),
     )
 
     token = os.environ.get('AI_API_TOKEN')
