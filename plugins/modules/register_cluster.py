@@ -29,7 +29,7 @@ author:
 EXAMPLES = r"""
 # Use argument
 - name: Register cluster
-  register_cluster
+  register_cluster:
     data: {
         'name': 'testcluster',
         'openshift_version': '4.16',
