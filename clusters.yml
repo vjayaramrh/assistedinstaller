@@ -39,4 +39,3 @@
       debug:
         var: delete_cluster
       when: delete_cluster is defined
-
