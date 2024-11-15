@@ -2,22 +2,6 @@
   hosts: localhost
   tasks:
 
-    - name: Register a cluster
-      register_cluster:
-        data: {
-          'name': 'testcluster',
-          'openshift_version': '4.16',
-        }
-      register: registered_cluster
-
-    - name: Log register_cluster Results
-      debug:
-        var: registered_cluster
-
-    - name: Log register_cluster ID
-      debug:
-        var: "{{ registered_cluster.clusters.id }}"
-
     - name: Get a list of clusters with hosts
       clusters:
         action: list
@@ -39,4 +23,3 @@
       debug:
         var: delete_cluster
       when: delete_cluster is defined
-
