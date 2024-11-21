@@ -20,10 +20,11 @@ def _get_refresh_token(offline_token):
         'Accept': 'application/json'
     }
     # set data
-    data = {}
-    data['grant_type'] = "refresh_token"
-    data['client_id'] = "cloud-services"
-    data['refresh_token'] = offline_token
+    data = {
+        "grant_type": "refresh_token",
+        "client_id": "cloud-services",
+        "refresh_token": offline_token,
+    }
 
     # Generate API token
     response = requests.post(f"{URL}", data=data, json=None, headers=headers)
