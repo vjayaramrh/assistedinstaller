@@ -25,7 +25,7 @@
       register: list_clusters
 
     - name: List clusters with hosts
-      debug:
+      ansible.builtin.debug:
         var: list_clusters
 
     - name: Delete a cluster
@@ -36,6 +36,19 @@
       when: my_cluster_id is defined
 
     - name: List deleted cluster
-      debug:
+      ansible.builtin.debug:
         var: delete_cluster
       when: delete_cluster is defined
+
+    - name: Retrieve a cluster
+      clusters:
+        action: get
+        cluster_id: "{{ my_cluster_id }}"
+      register: cluster_details
+      when: my_cluster_id is defined
+
+    - name: List cluster details
+      ansible.builtin.debug:
+        var: get_cluster
+      when: cluster_details is defined
+...
