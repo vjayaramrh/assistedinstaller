@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import traceback
+import os
 
 try:
     import requests
@@ -28,4 +29,19 @@ def _get_refresh_token(offline_token):
 
     # Generate API token
     response = requests.post(f"{URL}", data=data, headers=headers)
-    return response
+    if 'access_token' in response.json():
+        return response.json()['access_token']
+
+    return None
+
+
+def GetToken():
+    token = os.environ.get('AI_API_TOKEN')
+    if token:
+        return token
+
+    offline_token = os.environ.get('AI_OFFLINE_TOKEN')
+    if offline_token:
+        return _get_refresh_token(offline_token)
+
+    return None
