@@ -28,4 +28,4 @@ def _get_refresh_token(offline_token):
 
     # Generate API token
     response = requests.post(f"{URL}", data=data, headers=headers)
-    return response
+    return response.json()['access_token']
