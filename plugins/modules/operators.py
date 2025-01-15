@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from ansible_collections.openshift_lab.assisted_installer.plugins.module_utils import apitoken
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
@@ -54,7 +55,7 @@ API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
 
 def run_module():
     module_args = dict()
-    token = os.environ.get('AI_API_TOKEN')
+    token = apitoken.GetToken()
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=False)
 
     # Fail if requests is not installed
