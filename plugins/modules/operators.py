@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
+from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 DOCUMENTATION = r"""
@@ -36,7 +36,7 @@ import traceback
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import missing_required_lib
-from __future__ import (absolute_import, division, print_function)
+
 from ansible_collections.openshift_lab.assisted_installer.plugins.module_utils import apitoken
 
 try:
