@@ -36,7 +36,10 @@ import traceback
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import missing_required_lib
 
-from ansible_collections.openshift_lab.assisted_installer.plugins.module_utils import apitoken
+try:
+    from ansible_collections.openshift_lab.assisted_installer.plugins.module_utils import apitoken
+except ImportError:
+    from ansible.module_utils import apitoken
 
 try:
     import requests
