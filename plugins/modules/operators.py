@@ -31,7 +31,6 @@ operators:
     sample: ["lso", "odf", "cnv", "lvm", "mce"]
 """
 
-import os
 import traceback
 
 from ansible.module_utils.basic import AnsibleModule
