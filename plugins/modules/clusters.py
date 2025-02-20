@@ -42,6 +42,11 @@ EXAMPLES = r"""
   clusters:
     action: list
 
+- name: Get cluster details
+  clusters:
+    action: get
+    cluster_id: "deadbeef-dead-beef-dead-beefdeadbeef"
+
 - name: Delete cluster
   clusters:
     action: delete
@@ -74,7 +79,7 @@ API_VERSION = "v2"
 API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
 
 # add additional query parameters to the query_params_list
-QUERY_PARAMS_LIST = ["with_hosts"]
+QUERY_PARAMS_LIST = ["with_hosts","cluster_id"]
 
 
 def run_module():
@@ -125,9 +130,29 @@ def run_module():
             module.fail_json(msg=f"Error deleting cluster_id: {module.params.get('cluster_id')}", **result)
 
         result = dict(changed=True, clusters=[])
+    # Retrieve cluster
+    elif module.params.get('action') == "get":
+
+        list_params = {}
+        for k in QUERY_PARAMS_LIST:
+            val = module.params.get(k)
+            if val:
+                list_params = list_params | { k: val }
+
+        cluster_id = module.params.get('cluster_id')
+        request_url = f"{API_URL}/clusters"
+
+        if not module.params.get('cluster_id'):
+            module.fail_json(msg="cluster_id is required for retrieve action")
+        response = requests.get(request_url, params=list_params, headers=headers)
+
+        if response.status_code != 200:
+            result = dict(response=response.text)
+            module.fail_json(msg=f"Error retrieving cluster_id: {module.params.get('cluster_id')}", **result)
+
+        result = dict(changed=False,clusters=response.json())
 
     module.exit_json(**result)
-
 
 def main():
     run_module()
