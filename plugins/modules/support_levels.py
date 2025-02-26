@@ -7,15 +7,21 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: features
+module: support_levels
 
-short_description: Query OpenShift features
+short_description: Query OpenShift support levels
 
 version_added: "1.0.0"
 
-description: Query supported features for a given OpenShift version
+description: Query supported architectures or features for a given OpenShift version
 
 options:
+  resource_type:
+    description: Type of resource to query
+    required: True
+    choices: [architectures, features]
+    type: str
+
   openshift_version:
     description: Version of OpenShift
     required: True
@@ -44,14 +50,32 @@ author:
 """
 
 EXAMPLES = r"""
+- name: Query OpenShift architectures
+  support_levels:
+    resource_type: architectures
+    openshift_version: 4.16.19
+  register: architectures_result
+
 - name: Query OpenShift features
-  features:
+  support_levels:
+    resource_type: features
     openshift_version: 4.16.19
     cpu_architecture: x86_64
     platform_type: baremetal
+  register: features_result
 """
 
 RETURN = r"""
+architectures:
+  description: A list of supported OpenShift architectures
+  type: dict
+  returned: always
+  sample: { "ARM64_ARCHITECTURE": "supported",
+            "MULTIARCH_RELEASE_IMAGE": "tech-preview",
+            "PPC64LE_ARCHITECTURE": "supported",
+            "S390X_ARCHITECTURE": "supported",
+            "X86_64_ARCHITECTURE": "supported" }
+
 features:
   description: A list of supported OpenShift features
   type: dict
@@ -75,7 +99,6 @@ features:
             "SNO": "supported",
             "USER_MANAGED_NETWORKING": "supported",
             "VIP_AUTO_ALLOC": "unavailable" }
-
 """
 
 from ansible.module_utils.basic import AnsibleModule
@@ -83,6 +106,11 @@ from ansible.module_utils.basic import missing_required_lib
 
 import os
 import traceback
+
+try:
+    from ansible_collections.openshift_lab.assisted_installer.plugins.module_utils import apitoken
+except ImportError:
+    from ansible.module_utils import apitoken
 
 try:
     import requests
@@ -100,13 +128,14 @@ QUERY_PARAMS_LIST = ["openshift_version", "cpu_architecture", "platform_type", "
 
 def run_module():
     module_args = dict(
+        resource_type=dict(type="str", required=True, choices=["architectures", "features"]),
         openshift_version=dict(type="str", required=True),
         cpu_architecture=dict(type="str", required=False, default="x86_64", choices=["x86_64", "aarch64", "arm64", "ppc64le", "s390x", "multi"]),
         platform_type=dict(type="str", required=False, choices=["baremetal", "none", "nutanix", "vsphere", "external"]),
         external_platform_name=dict(type="str", required=False)
     )
 
-    token = os.environ.get('AI_API_TOKEN')
+    token = apitoken.GetToken()
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=False)
 
     # Fail if requests is not installed
@@ -119,6 +148,7 @@ def run_module():
         'Authorization': f'Bearer {token}'
     }
 
+    resource_type = module.params.get('resource_type')
     query_params = {}
 
     for k in QUERY_PARAMS_LIST:
@@ -126,11 +156,11 @@ def run_module():
         if val:
             query_params = query_params | {k: val}
 
-    response = requests.get(f"{API_URL}/support-levels/features", params=query_params, headers=headers)
+    response = requests.get(f"{API_URL}/support-levels/{resource_type}", params=query_params, headers=headers)
 
     if not response.ok:
         result = dict(changed=True, response=response.text)
-        module.fail_json(msg="Error querying features", **result)
+        module.fail_json(msg=f"Error querying {resource_type}", **result)
 
     result = response.json()
 
