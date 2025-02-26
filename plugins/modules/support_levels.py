@@ -104,7 +104,6 @@ features:
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import missing_required_lib
 
-import os
 import traceback
 
 try:
