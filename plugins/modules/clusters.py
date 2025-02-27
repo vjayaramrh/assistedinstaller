@@ -17,8 +17,8 @@ version_added: "1.0.0"
 description: Interact with clusters through the AssistedInstall API
 
 options:
-    action:
-      description: The action to perform (list, create, delete)
+    state:
+      description: The state to perform (present, absent, none for list)
       required: false
       default: "list"
       type: str
@@ -32,7 +32,6 @@ options:
         type: bool
     data:
         description: Data used to register a cluster
-        default: false
         type: dict
 
 author:
@@ -45,11 +44,10 @@ EXAMPLES = r"""
 # Use argument
 - name: List clusters
   clusters:
-    action: list
 
 - name: Delete cluster
   clusters:
-    action: delete
+    state: absent
     cluster_id: "deadbeef-dead-beef-dead-beefdeadbeef"
 """
 
@@ -85,7 +83,7 @@ QUERY_PARAMS_LIST = ["with_hosts"]
 def run_module():
 
     module_args = dict(
-        action=dict(type="str", required=False, default="list"),
+        state=dict(type="str", required=False, default="list"),
         cluster_id=dict(type="str", required=False),
         # any API query parameters may have to be added here
         with_hosts=dict(type="bool", required=False, default=False),
@@ -104,7 +102,7 @@ def run_module():
         'Authorization': f'Bearer {token}'
     }
     # List clusters
-    if module.params.get('action') == "list":
+    if module.params.get('state') == "list":
         list_params = {}
         for k in QUERY_PARAMS_LIST:
             val = module.params.get(k)
@@ -120,7 +118,7 @@ def run_module():
         result = dict(clusters=response.json())
 
     # Delete cluster
-    elif module.params.get('action') == "absent":
+    elif module.params.get('state') == "absent":
         if not module.params.get('cluster_id'):
             module.fail_json(msg="cluster_id is required for delete action")
 
@@ -133,7 +131,7 @@ def run_module():
         result = dict(changed=True, clusters=[])
 
     # Register cluster
-    elif module.params.get('action') == "present":
+    elif module.params.get('state') == "present":
         pull_secret = os.environ.get('AI_PULL_SECRET')
 
         data = module.params.get('data')

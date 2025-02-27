@@ -4,7 +4,7 @@
 
     - name: Register a cluster
       clusters:
-        action: present
+        state: present
         data: {
           'name': 'testcluster',
           'openshift_version': '4.16',
@@ -30,7 +30,7 @@
 
     - name: Delete a cluster
       clusters:
-        action: absent
+        state: absent
         cluster_id: "{{ my_cluster_id }}"
       register: delete_cluster
       when: my_cluster_id is defined
