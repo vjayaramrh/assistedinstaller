@@ -1,0 +1,24 @@
+- name: Test support_levels
+  hosts: localhost
+  tasks:
+    - name: Query OpenShift architectures
+      support_levels:
+        resource_type: architectures
+        openshift_version: 4.16.19
+      register: architectures_result
+
+    - name: Print supported architectures
+      debug:
+        var: architectures_result
+
+    - name: Query OpenShift features
+      support_levels:
+        resource_type: features
+        openshift_version: 4.16.19
+        cpu_architecture: x86_64
+        platform_type: baremetal
+      register: features_result
+
+    - name: Print supported features
+      debug:
+        var: features_result
