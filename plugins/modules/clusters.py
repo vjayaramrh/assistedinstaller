@@ -120,9 +120,6 @@ def run_module():
 
     # Delete cluster
     if module.params.get("state") == "absent":
-        if not module.params.get("cluster_id"):
-            module.fail_json(msg="cluster_id is required for delete action")
-
         response = requests.delete(
             f"{API_URL}/clusters/{module.params.get('cluster_id')}", headers=headers
         )
