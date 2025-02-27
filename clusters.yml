@@ -5,10 +5,8 @@
     - name: Register a cluster
       clusters:
         state: present
-        data: {
-          'name': 'testcluster',
-          'openshift_version': '4.16',
-        }
+        name: testcluster
+        openshift_version: "4.16"
       register: registered_cluster
 
     - name: Log register_cluster Results

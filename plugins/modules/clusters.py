@@ -18,22 +18,28 @@ description: Interact with clusters through the AssistedInstall API
 
 options:
     state:
-      description: The state to perform (present, absent, none for list)
-      required: false
-      choices: ["absent", "present"]
-      default: null
-      type: str
+        description: The state to perform (present, absent, none for list)
+        required: false
+        choices: ["absent", "present"]
+        default: null
+        type: str
     cluster_id:
         description: The cluster ID to perform the action on
         required: false
         type: str
     with_hosts:
         description: Include hosts in the returned list
+        required: false
         default: false
         type: bool
-    data:
-        description: Data used to register a cluster
-        type: dict
+    name:
+        description: Name used to register a cluster
+        required: false
+        type: str
+    openshift_version:
+        description: OpenShift version used to register a cluster
+        required: false
+        type: str
 
 author:
     - Vishwanath Jayaraman (@vjayaramrh)
@@ -88,10 +94,11 @@ def run_module():
         cluster_id=dict(type="str", required=False),
         # any API query parameters may have to be added here
         with_hosts=dict(type="bool", required=False, default=False),
-        data=dict(type="dict", required=False),
+        name=dict(type="str", required=False),
+        openshift_version=dict(type="str", required=False)
     )
     token = os.environ.get('AI_API_TOKEN')
-    module = AnsibleModule(argument_spec=module_args, supports_check_mode=False)
+    module = AnsibleModule(argument_spec=module_args, required_if=[('state', 'present', ['name', 'openshift_version'])], supports_check_mode=False)
 
     # Fail if requests is not installed
     if not HAS_REQUESTS:
@@ -120,7 +127,7 @@ def run_module():
     elif module.params.get('state') == "present":
         pull_secret = os.environ.get('AI_PULL_SECRET')
 
-        data = module.params.get('data')
+        data = remove_module_fields(module)
         data['pull_secret'] = pull_secret
 
         response = requests.post(f"{API_URL}/clusters", headers=headers, json=data)
@@ -149,6 +156,13 @@ def run_module():
 
     module.exit_json(**result)
 
+def remove_module_fields(module):
+    data = module.params.copy()
+    data.pop("state")
+    data.pop("with_hosts")
+    data.pop("cluster_id")
+
+    return data
 
 def main():
     run_module()
