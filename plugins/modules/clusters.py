@@ -24,7 +24,7 @@ options:
         default: null
         type: str
     cluster_id:
-        description: The cluster ID to perform the action on
+        description: The cluster ID to perform the action on (required for operations on a specific cluster)
         required: false
         type: str
     with_hosts:
