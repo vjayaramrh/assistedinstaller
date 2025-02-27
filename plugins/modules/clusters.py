@@ -18,7 +18,7 @@ description: Interact with clusters through the AssistedInstall API
 
 options:
     state:
-        description: The state to perform (present, absent, none for list)
+        description: The state to perform (present, absent, none for list). Note that this is required for create, delete and update operations.
         required: false
         choices: ["absent", "present"]
         default: null
