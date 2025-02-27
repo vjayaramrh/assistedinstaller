@@ -122,7 +122,8 @@ else:
 
 API_VERSION = "v2"
 API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
-QUERY_PARAMS_LIST = ["openshift_version", "cpu_architecture", "platform_type", "external_platform_name"]
+QUERY_PARAMS_LIST = {"architectures": ["openshift_version"],
+                     "features": ["openshift_version", "cpu_architecture", "platform_type", "external_platform_name"]}
 
 
 def run_module():
@@ -150,7 +151,7 @@ def run_module():
     resource_type = module.params.get('resource_type')
     query_params = {}
 
-    for k in QUERY_PARAMS_LIST:
+    for k in QUERY_PARAMS_LIST[resource_type]:
         val = module.params.get(k)
         if val:
             query_params = query_params | {k: val}
