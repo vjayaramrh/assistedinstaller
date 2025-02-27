@@ -20,6 +20,7 @@ options:
     state:
       description: The state to perform (present, absent, none for list)
       required: false
+      choices: ["absent", "present"]
       default: None
       type: str
     cluster_id:
