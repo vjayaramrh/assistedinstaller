@@ -84,6 +84,7 @@ def run_module():
         cluster_id=dict(type="str", required=False),
         # any API query parameters may have to be added here
         with_hosts=dict(type="bool", required=False, default=False),
+        data=dict(type="dict", required=False),
     )
     token = os.environ.get('AI_API_TOKEN')
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=False)
@@ -114,7 +115,7 @@ def run_module():
         result = dict(clusters=response.json())
 
     # Delete cluster
-    elif module.params.get('action') == "delete":
+    elif module.params.get('action') == "absent":
         if not module.params.get('cluster_id'):
             module.fail_json(msg="cluster_id is required for delete action")
 
@@ -125,6 +126,21 @@ def run_module():
             module.fail_json(msg=f"Error deleting cluster_id: {module.params.get('cluster_id')}", **result)
 
         result = dict(changed=True, clusters=[])
+
+    # Register cluster
+    elif module.params.get('action') == "present":
+        pull_secret = os.environ.get('AI_PULL_SECRET')
+
+        data = module.params.get('data')
+        data['pull_secret'] = pull_secret
+
+        response = requests.post(f"{API_URL}/clusters", headers=headers, json=data)
+
+        if not response.ok:
+            result = dict(changed=True, response=response.text)
+            module.fail_json(msg="Error registering cluster", **result)
+
+        result = dict(clusters=response.json())
 
     module.exit_json(**result)
 
