@@ -3,11 +3,10 @@
   tasks:
 
     - name: Register a cluster
-      register_cluster:
-        data: {
-          'name': 'testcluster',
-          'openshift_version': '4.16',
-        }
+      clusters:
+        state: present
+        name: testcluster
+        openshift_version: "4.16"
       register: registered_cluster
 
     - name: Log register_cluster Results
@@ -20,7 +19,6 @@
 
     - name: Get a list of clusters with hosts
       clusters:
-        action: list
         with_hosts: true
       register: list_clusters
 
@@ -30,7 +28,7 @@
 
     - name: Delete a cluster
       clusters:
-        action: delete
+        state: absent
         cluster_id: "{{ my_cluster_id }}"
       register: delete_cluster
       when: my_cluster_id is defined
