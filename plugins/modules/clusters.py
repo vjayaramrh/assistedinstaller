@@ -20,7 +20,7 @@ options:
     state:
       description: The state to perform (present, absent, none for list)
       required: false
-      default: "list"
+      default: None
       type: str
     cluster_id:
         description: The cluster ID to perform the action on
@@ -83,7 +83,7 @@ QUERY_PARAMS_LIST = ["with_hosts"]
 def run_module():
 
     module_args = dict(
-        state=dict(type="str", required=False, default="list"),
+        state=dict(type="str", required=False, choices=["absent", "present"], default=None),
         cluster_id=dict(type="str", required=False),
         # any API query parameters may have to be added here
         with_hosts=dict(type="bool", required=False, default=False),
@@ -101,24 +101,9 @@ def run_module():
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {token}'
     }
-    # List clusters
-    if module.params.get('state') == "list":
-        list_params = {}
-        for k in QUERY_PARAMS_LIST:
-            val = module.params.get(k)
-            if val:
-                list_params = list_params | {k: val}
-
-        response = requests.get(f"{API_URL}/clusters", params=list_params, headers=headers)
-
-        if not response.ok:
-            result = dict(changed=True, response=response.text)
-            module.fail_json(msg="Error listing clusters", **result)
-
-        result = dict(clusters=response.json())
 
     # Delete cluster
-    elif module.params.get('state') == "absent":
+    if module.params.get('state') == "absent":
         if not module.params.get('cluster_id'):
             module.fail_json(msg="cluster_id is required for delete action")
 
@@ -142,6 +127,22 @@ def run_module():
         if not response.ok:
             result = dict(changed=True, response=response.text)
             module.fail_json(msg="Error registering cluster", **result)
+
+        result = dict(clusters=response.json())
+
+    # List clusters
+    else:
+        list_params = {}
+        for k in QUERY_PARAMS_LIST:
+            val = module.params.get(k)
+            if val:
+                list_params = list_params | {k: val}
+
+        response = requests.get(f"{API_URL}/clusters", params=list_params, headers=headers)
+
+        if not response.ok:
+            result = dict(changed=True, response=response.text)
+            module.fail_json(msg="Error listing clusters", **result)
 
         result = dict(clusters=response.json())
 
