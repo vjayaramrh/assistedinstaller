@@ -33,11 +33,11 @@ options:
         default: false
         type: bool
     name:
-        description: Name used to register a cluster
+        description: Name used to register a cluster (required for present)
         required: false
         type: str
     openshift_version:
-        description: OpenShift version used to register a cluster
+        description: OpenShift version used to register a cluster (required for present)
         required: false
         type: str
 
@@ -156,6 +156,7 @@ def run_module():
 
     module.exit_json(**result)
 
+
 def remove_module_fields(module):
     data = module.params.copy()
     data.pop("state")
@@ -163,6 +164,7 @@ def remove_module_fields(module):
     data.pop("cluster_id")
 
     return data
+
 
 def main():
     run_module()
