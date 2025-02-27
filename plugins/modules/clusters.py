@@ -37,7 +37,7 @@ options:
         required: false
         type: str
     openshift_version:
-        description: OpenShift version used to register a cluster (required for present). Note that is required for cluster create operations.
+        description: OpenShift version used to register a cluster (required for present). Note that this is required for cluster create operations.
         required: false
         type: str
 
