@@ -33,7 +33,7 @@ options:
         default: false
         type: bool
     name:
-        description: Name used to register a cluster (required for present). Note that is required for cluster create operations.
+        description: Name used to register a cluster (required for present). Note that this is required for cluster create operations.
         required: false
         type: str
     openshift_version:
