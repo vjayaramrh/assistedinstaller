@@ -21,7 +21,7 @@ options:
       description: The state to perform (present, absent, none for list)
       required: false
       choices: ["absent", "present"]
-      default: None
+      default: null
       type: str
     cluster_id:
         description: The cluster ID to perform the action on
