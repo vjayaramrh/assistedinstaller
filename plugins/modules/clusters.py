@@ -30,10 +30,15 @@ options:
         description: Include hosts in the returned list
         default: false
         type: bool
+    data:
+        description: Data used to register a cluster
+        default: false
+        type: dict
 
 author:
-    - Name (@vjayaramrh)
+    - Vishwanath Jayaraman (@vjayaramrh)
     - Tony García (@tonyskapunk)
+    - Daniel Kostecki (@dkosteck)
 """
 
 EXAMPLES = r"""
