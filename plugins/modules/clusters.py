@@ -68,6 +68,12 @@ clusters:
 
 import os
 import traceback
+
+try:
+    from ansible_collections.openshift_lab.assisted_installer.plugins.module_utils import apitoken
+except ImportError:
+    from ansible.module_utils import apitoken
+
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import missing_required_lib
 
@@ -99,7 +105,7 @@ def run_module():
         name=dict(type="str", required=False),
         openshift_version=dict(type="str", required=False),
     )
-    token = os.environ.get("AI_API_TOKEN")
+    token = apitoken.GetToken()
     module = AnsibleModule(
         argument_spec=module_args,
         required_if=[
