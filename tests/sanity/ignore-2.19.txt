@@ -2,3 +2,4 @@ plugins/modules/clusters.py validate-modules:missing-gplv3-license # ignore gplv
 plugins/modules/operators.py validate-modules:missing-gplv3-license # ignore gplv3
 plugins/modules/events.py validate-modules:missing-gplv3-license # ignore gplv3
 plugins/modules/support_levels.py validate-modules:missing-gplv3-license # ignore gplv3
+plugins/modules/infra_envs.py validate-modules:missing-gplv3-license # ignore gplv3
