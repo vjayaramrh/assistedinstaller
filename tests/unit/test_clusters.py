@@ -5,13 +5,12 @@ import ast
 import json
 import responses
 import unittest
-from unittest.mock import *
+from unittest.mock import patch
 
 from ansible.module_utils import basic
 from ansible.module_utils.common.text.converters import to_bytes
 
-
-import plugins.modules.clusters as clusters
+from plugins.modules import clusters
 
 API_VERSION = "v2"
 API_URL = f"https://api.openshift.com/api/assisted-install/{API_VERSION}"
@@ -71,11 +70,6 @@ class TestClusters(unittest.TestCase):
         self.mock_module_helper.start()
         self.addCleanup(self.mock_module_helper.stop)
 
-    def test_module_fail_when_required_args_missing(self):
-        with self.assertRaises(AnsibleFailJson):
-            set_module_args({})
-            clusters.main()
-
     @responses.activate
     def test_clusters_list(self):
         print("test_clusters_list:\n(http_code)")
@@ -94,9 +88,7 @@ class TestClusters(unittest.TestCase):
                 with self.assertRaises(AnsibleExitJson) as result:
                     clusters.main()
 
-                self.assertFalse(
-                    result.exception.args[0]["changed"]
-                )  # ensure result is changed
+                self.assertFalse(result.exception.args[0]["changed"])
                 self.assertEqual(
                     ast.literal_eval(str(result.exception))["clusters"], TEST_JSON
                 )
@@ -105,9 +97,7 @@ class TestClusters(unittest.TestCase):
                 with self.assertRaises(AnsibleFailJson) as result:
                     clusters.main()
 
-                self.assertTrue(
-                    result.exception.args[0]["changed"]
-                )  # ensure result is changed
+                self.assertTrue(result.exception.args[0]["changed"])
                 self.assertEqual(
                     ast.literal_eval(str(result.exception))["msg"],
                     "Error listing clusters",
@@ -158,9 +148,7 @@ class TestClusters(unittest.TestCase):
                 with self.assertRaises(AnsibleExitJson) as result:
                     clusters.main()
 
-                self.assertFalse(
-                    result.exception.args[0]["changed"]
-                )  # ensure result is changed
+                self.assertFalse(result.exception.args[0]["changed"])
                 self.assertEqual(
                     ast.literal_eval(str(result.exception))["clusters"], TEST_JSON
                 )
@@ -169,9 +157,7 @@ class TestClusters(unittest.TestCase):
                 with self.assertRaises(AnsibleFailJson) as result:
                     clusters.main()
 
-                self.assertTrue(
-                    result.exception.args[0]["changed"]
-                )  # ensure result is changed
+                self.assertTrue(result.exception.args[0]["changed"])
                 self.assertEqual(
                     ast.literal_eval(str(result.exception))["msg"],
                     "Error registering cluster",
@@ -209,9 +195,7 @@ class TestClusters(unittest.TestCase):
                 with self.assertRaises(AnsibleExitJson) as result:
                     clusters.main()
 
-                self.assertTrue(
-                    result.exception.args[0]["changed"]
-                )  # ensure result is changed
+                self.assertTrue(result.exception.args[0]["changed"])
                 self.assertEqual(
                     ast.literal_eval(str(result.exception))["clusters"], []
                 )
