@@ -1,0 +1,29 @@
+- name: Test openshift_versions
+  hosts: localhost
+  tasks:
+    - name: Query OpenShift all versions
+      openshift_versions:
+      register: all_openshift_versions_result
+
+    - name: Print all OpenShift versions
+      ansible.builtin.debug:
+        var: all_openshift_versions_result
+
+    - name: Query all OpenShift 4.18 versions
+      openshift_versions:
+        version: 4.18
+      register: openshift_versions_result
+
+    - name: Print all OpenShift 4.18 versions
+      ansible.builtin.debug:
+        var: openshift_versions_result
+
+    - name: Query OpenShift latest 4.18 version
+      openshift_versions:
+        version: 4.18
+        only_latest: true
+      register: only_latest_openshift_versions_result
+
+    - name: Print latest 4.18 OpenShift version
+      ansible.builtin.debug:
+        var: only_latest_openshift_versions_result
