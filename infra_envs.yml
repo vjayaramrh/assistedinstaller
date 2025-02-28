@@ -1,9 +1,9 @@
-- name: Test infra-envs
+- name: Test infra_envs module
   hosts: localhost
   tasks:
 
     - name: Create a infra-env
-      infra-envs:
+      infra_envs:
         state: present
         name: testinfra
         pull_secret: '<insert your pullsecret between the single quotes>'
