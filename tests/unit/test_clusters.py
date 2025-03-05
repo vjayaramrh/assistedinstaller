@@ -170,7 +170,6 @@ class TestClusters(unittest.TestCase):
             print(http_code, " ", correct_args)
             responses.delete(
                 f"{API_URL}/clusters/{cluster_id}",
-                json=TEST_JSON,
                 status=http_code,
             )
 
