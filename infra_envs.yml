@@ -1,0 +1,15 @@
+- name: Test infra_envs module
+  hosts: localhost
+  tasks:
+
+    - name: Create a infra-env
+      infra_envs:
+        state: present
+        name: testinfra
+        pull_secret: '<insert your pullsecret between the single quotes>'
+
+      register: registered_infraenvs
+
+    - name: Log registered_infraenvs Results
+      debug:
+        var: registered_infraenvs
