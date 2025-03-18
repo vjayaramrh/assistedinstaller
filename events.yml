@@ -4,7 +4,6 @@
 
     - name: Get list of events for a cluster
       events:
-        action: list
         cluster_id: "{{ my_cluster_id }}"
         limit: "{{ cluster_events_limit | default(omit) }}"
         order: "{{ cluster_events_order | default('ascending') }}"

@@ -16,11 +16,6 @@ version_added: "1.0.0"
 description: Interact with cluster events through the AssistedInstall API
 
 options:
-    action:
-        description: The action to perform.
-        required: false
-        default: "list"
-        type: str
     cluster_id:
         description: The cluster ID to perform the action on.
         type: str
@@ -54,12 +49,11 @@ EXAMPLES = r"""
 # Use argument
 - name: List cluster events
   events:
-    action: list
     cluster_id: "deadmeat-dead-meat-dead-meatdeadmeat"
     limit: 50
     order: descending
     offset: 10
-    severities: [ "critical", "info"]
+    severities: ["critical", "info"]
 """
 
 RETURN = r"""
@@ -116,7 +110,6 @@ QUERY_PARAMS_LIST = ["cluster_id", "limit", "order", "offset", "severities"]
 
 def run_module():
     module_args = dict(
-        action=dict(type="str", required=False, default="list"),
         cluster_id=dict(type="str", required=False),
         # any API query parameters may have to be added here
         limit=dict(type="int", required=False),
@@ -139,25 +132,24 @@ def run_module():
     }
 
     # List cluster events
-    if module.params.get('action') == "list":
-        if not module.params.get('cluster_id'):
-            module.fail_json(msg="cluster_id is required for list cluster events action")
-        list_params = {}
-        for k in QUERY_PARAMS_LIST:
-            val = module.params.get(k)
-            if val:
-                if isinstance(val, list):
-                    list_params = list_params | {k: ",".join(val)}
-                else:
-                    list_params = list_params | {k: val}
+    if not module.params.get('cluster_id'):
+        module.fail_json(msg="cluster_id is required")
+    list_params = {}
+    for k in QUERY_PARAMS_LIST:
+        val = module.params.get(k)
+        if val:
+            if isinstance(val, list):
+                list_params = list_params | {k: ",".join(val)}
+            else:
+                list_params = list_params | {k: val}
 
-        response = requests.get(f"{API_URL}/events", params=list_params, headers=headers)
+    response = requests.get(f"{API_URL}/events", params=list_params, headers=headers)
 
-        if not response.ok:
-            result = dict(changed=True, response=response.text)
-            module.fail_json(msg="Error listing cluster events", **result)
+    if not response.ok:
+        result = dict(changed=True, response=response.text)
+        module.fail_json(msg="Error listing cluster events", **result)
 
-        result = dict(changed=False, cluster_events=response.json())
+    result = dict(changed=False, cluster_events=response.json())
 
     module.exit_json(**result)
 
