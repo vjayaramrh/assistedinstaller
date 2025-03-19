@@ -18,6 +18,7 @@ description: Interact with cluster events through the AssistedInstall API
 options:
     cluster_id:
         description: The cluster ID to perform the action on.
+        required: false
         type: str
     limit:
         description: The maximum number of records/events to retrieve.
@@ -132,8 +133,6 @@ def run_module():
     }
 
     # List cluster events
-    if not module.params.get('cluster_id'):
-        module.fail_json(msg="cluster_id is required")
     list_params = {}
     for k in QUERY_PARAMS_LIST:
         val = module.params.get(k)
