@@ -7,7 +7,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: operators
+module: supported_operators
 
 short_description: Information regarding supported operators
 
@@ -17,16 +17,17 @@ description: Assisted Service API to retrieve supported operators
 
 author:
     - Tony García (@tonyskapunk)
+    - Vishwanath Jayaraman (@vjayaramrh)
 """
 
 EXAMPLES = r"""
 # Use argument
 - name: List supported operators
-  operators:
+  supported_operators:
 """
 
 RETURN = r"""
-operators:
+supported_operators:
     description: List of supported operators
     type: list
     returned: always
@@ -80,10 +81,10 @@ def run_module():
         except requests.JSONDecodeError:
             res = response.text
 
-        result = dict(changed=False, response=res, operators=[])
+        result = dict(changed=False, response=res, supported_operators=[])
         module.fail_json(msg="Error listing supported operators", **result)
 
-    result = dict(changed=False, operators=response.json())
+    result = dict(changed=False, supported_operators=response.json())
 
     module.exit_json(**result)
 
