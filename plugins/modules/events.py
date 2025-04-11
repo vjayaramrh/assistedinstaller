@@ -119,7 +119,7 @@ def run_module():
         severities=dict(type="list", elements="str", required=False, choices=["info", "warning", "error", "critical"]),
     )
 
-    token = os.environ.get('AI_API_TOKEN')
+    token = apitoken.GetToken()
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=False)
 
     # Fail if requests is not installed
