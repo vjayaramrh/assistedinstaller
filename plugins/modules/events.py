@@ -88,10 +88,14 @@ cluster_events:
         ]
 """
 
-import os
 import traceback
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import missing_required_lib
+
+try:
+    from ansible_collections.openshift_lab.assisted_installer.plugins.module_utils import apitoken
+except ImportError:
+    from ansible.module_utils import apitoken
 
 try:
     import requests
@@ -119,7 +123,7 @@ def run_module():
         severities=dict(type="list", elements="str", required=False, choices=["info", "warning", "error", "critical"]),
     )
 
-    token = os.environ.get('AI_API_TOKEN')
+    token = apitoken.GetToken()
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=False)
 
     # Fail if requests is not installed
