@@ -1,0 +1,16 @@
+---
+- name: Test release_sources module
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: List all release source configurations
+      release_sources:
+      register: sources_result
+
+    - name: Display release sources
+      debug:
+        var: sources_result.release_sources
+
+    - name: Show count of release sources
+      debug:
+        msg: "Found {{ sources_result.release_sources | length }} release source(s)" 
