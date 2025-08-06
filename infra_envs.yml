@@ -1,15 +1,167 @@
-- name: Test infra_envs module
+---
+- name: Test infra_envs module - All Operations
   hosts: localhost
+  gather_facts: false
+  vars:
+    # Set your pull secret here or use environment variable
+    # Note: AI_PULL_SECRET should contain the JSON string of the pull secret
+    pull_secret: "{{ lookup('env', 'AI_PULL_SECRET') }}"
+    
   tasks:
-
-    - name: Create a infra-env
+    # Example 1: Create a new infra-env
+    - name: Create infra-env with basic configuration
       infra_envs:
         state: present
-        name: testinfra
-        pull_secret: '<insert your pullsecret between the single quotes>'
-
-      register: registered_infraenvs
-
-    - name: Log registered_infraenvs Results
+        name: "test-infra-env"
+        openshift_version: "4.19"
+        cpu_architecture: "x86_64"
+        image_type: "minimal-iso"
+      register: created_infra_env
+      
+    - name: Display created infra-env details
       debug:
-        var: registered_infraenvs
+        var: created_infra_env
+        
+    # Example 2: Create infra-env with advanced configuration
+    - name: Create infra-env with proxy and SSH key
+      infra_envs:
+        state: present
+        name: "advanced-infra-env"
+        openshift_version: "4.19"
+        cpu_architecture: "x86_64"
+        image_type: "full-iso"
+        ssh_authorized_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ... your-key-here"
+        proxy:
+          http_proxy: "http://proxy.example.com:8080"
+          https_proxy: "https://proxy.example.com:8080"
+          no_proxy: "localhost,127.0.0.1,.example.com"
+        static_network_config:
+          - interface: "eth0"
+            ip: "192.168.1.100"
+            netmask: "255.255.255.0"
+            gateway: "192.168.1.1"
+        kernel_arguments:
+          - operation: "append"
+            value: "console=ttyS0"
+          - operation: "append"
+            value: "rd.debug"
+      register: advanced_infra_env
+      
+    - name: Display advanced infra-env details
+      debug:
+        var: advanced_infra_env
+
+    # Example 3: List all infra-envs
+    - name: List all infra-envs
+      infra_envs:
+      register: all_infra_envs
+      
+    - name: Display all infra-envs
+      debug:
+        var: all_infra_envs
+        
+    # Example 4: Get specific infra-env by ID
+    - name: Get specific infra-env details
+      infra_envs:
+        infra_env_id: "{{ created_infra_env.infra_envs.id }}"
+      register: specific_infra_env
+      when: created_infra_env.infra_envs.id is defined
+      
+    - name: Display specific infra-env details
+      debug:
+        var: specific_infra_env
+      when: specific_infra_env is defined
+      
+    # Example 5: Update existing infra-env
+    - name: Update infra-env with new SSH key
+      infra_envs:
+        state: present
+        infra_env_id: "{{ created_infra_env.infra_envs.id }}"
+        ssh_authorized_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ... updated-key-here"
+        proxy:
+          http_proxy: "http://newproxy.example.com:8080"
+          https_proxy: "https://newproxy.example.com:8080"
+          no_proxy: "localhost,127.0.0.1,.newexample.com"
+      register: updated_infra_env
+      when: created_infra_env.infra_envs.id is defined
+      
+    - name: Display updated infra-env details
+      debug:
+        var: updated_infra_env
+      when: updated_infra_env is defined
+
+    # Example 6: Create infra-env associated with a cluster
+    - name: Create infra-env associated with cluster
+      infra_envs:
+        state: present
+        name: "cluster-infra-env"
+        pull_secret: "{{ pull_secret }}"
+        openshift_version: "4.19"
+        cpu_architecture: "x86_64"
+        cluster_id: "your-cluster-id-here"  # Replace with actual cluster ID
+        image_type: "minimal-iso"
+      register: cluster_infra_env
+      ignore_errors: true  # In case cluster_id doesn't exist
+      
+    - name: Display cluster infra-env details
+      debug:
+        var: cluster_infra_env
+      when: cluster_infra_env is not failed
+
+    # Example 7: Clean up - Delete infra-envs
+    - name: Delete basic infra-env
+      infra_envs:
+        state: absent
+        infra_env_id: "{{ created_infra_env.infra_envs.id }}"
+      register: deleted_basic_infra_env
+      when: created_infra_env.infra_envs.id is defined
+      
+    - name: Display deletion result
+      debug:
+        var: deleted_basic_infra_env
+      when: deleted_basic_infra_env is defined
+      
+    - name: Delete advanced infra-env
+      infra_envs:
+        state: absent
+        infra_env_id: "{{ advanced_infra_env.infra_envs.id }}"
+      register: deleted_advanced_infra_env
+      when: advanced_infra_env.infra_envs.id is defined
+      
+    - name: Display advanced deletion result
+      debug:
+        var: deleted_advanced_infra_env
+      when: deleted_advanced_infra_env is defined
+      
+    - name: Delete cluster infra-env
+      infra_envs:
+        state: absent
+        infra_env_id: "{{ cluster_infra_env.infra_envs.id }}"
+      register: deleted_cluster_infra_env
+      when: cluster_infra_env is not failed and cluster_infra_env.infra_envs.id is defined
+      
+    - name: Display cluster deletion result
+      debug:
+        var: deleted_cluster_infra_env
+      when: deleted_cluster_infra_env is defined
+
+    # Example 8: Error handling demonstration
+    - name: Try to get non-existent infra-env
+      infra_envs:
+        infra_env_id: "non-existent-id"
+      register: non_existent_infra_env
+      ignore_errors: true
+      
+    - name: Display error handling result
+      debug:
+        msg: "Expected error for non-existent infra-env: {{ non_existent_infra_env.msg }}"
+      when: non_existent_infra_env is failed
+
+    # Example 9: Final verification - List remaining infra-envs
+    - name: List remaining infra-envs after cleanup
+      infra_envs:
+      register: remaining_infra_envs
+      
+    - name: Display remaining infra-envs
+      debug:
+        var: remaining_infra_envs
