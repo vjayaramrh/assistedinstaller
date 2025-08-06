@@ -4,6 +4,7 @@
   gather_facts: false
   vars:
     # Set your pull secret here or use environment variable
+    # Note: AI_PULL_SECRET should contain the JSON string of the pull secret
     pull_secret: "{{ lookup('env', 'AI_PULL_SECRET') }}"
     
   tasks:

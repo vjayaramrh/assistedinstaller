@@ -347,6 +347,7 @@ def delete_infra_env(module, headers, infra_env_id):
 
 def prepare_infra_env_data(module, update=False):
     """Prepare data for API request"""
+    import json
     data = {}
     
     # Required fields for creation
@@ -354,7 +355,20 @@ def prepare_infra_env_data(module, update=False):
         if module.params.get("name"):
             data["name"] = module.params.get("name")
         if module.params.get("pull_secret"):
-            data["pull_secret"] = module.params.get("pull_secret")
+            pull_secret = module.params.get("pull_secret")
+            # Ensure pull_secret is properly formatted as JSON string
+            if isinstance(pull_secret, dict):
+                data["pull_secret"] = json.dumps(pull_secret)
+            elif isinstance(pull_secret, str):
+                try:
+                    # Test if it's valid JSON by parsing and re-dumping
+                    parsed = json.loads(pull_secret)
+                    data["pull_secret"] = json.dumps(parsed)
+                except (json.JSONDecodeError, ValueError):
+                    # If it's not valid JSON, assume it's already a string and pass as-is
+                    data["pull_secret"] = pull_secret
+            else:
+                data["pull_secret"] = str(pull_secret)
     
     # Optional fields
     if module.params.get("openshift_version"):
