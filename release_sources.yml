@@ -13,4 +13,4 @@
 
     - name: Show count of release sources
       debug:
-        msg: "Found {{ sources_result.release_sources | length }} release source(s)" 
+        msg: "Found {{ sources_result.release_sources | length }} release source(s)"
