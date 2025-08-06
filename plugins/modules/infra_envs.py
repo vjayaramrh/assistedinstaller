@@ -356,14 +356,17 @@ def prepare_infra_env_data(module, update=False):
             data["name"] = module.params.get("name")
         if module.params.get("pull_secret"):
             pull_secret = module.params.get("pull_secret")
+            
             # Ensure pull_secret is properly formatted as JSON string
             if isinstance(pull_secret, dict):
-                data["pull_secret"] = json.dumps(pull_secret)
+                # Convert dict to compact JSON string
+                data["pull_secret"] = json.dumps(pull_secret, separators=(',', ':'))
             elif isinstance(pull_secret, str):
                 try:
-                    # Test if it's valid JSON by parsing and re-dumping
+                    # Test if it's valid JSON by parsing it
                     parsed = json.loads(pull_secret)
-                    data["pull_secret"] = json.dumps(parsed)
+                    # If it's valid JSON, use the original string as-is to preserve formatting
+                    data["pull_secret"] = pull_secret
                 except (json.JSONDecodeError, ValueError):
                     # If it's not valid JSON, assume it's already a string and pass as-is
                     data["pull_secret"] = pull_secret
