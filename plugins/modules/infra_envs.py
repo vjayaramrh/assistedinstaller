@@ -354,9 +354,11 @@ def prepare_infra_env_data(module, update=False):
     if not update:
         if module.params.get("name"):
             data["name"] = module.params.get("name")
-        if module.params.get("pull_secret"):
-            # Simply pass the pull_secret as-is, like clusters.py does
-            data["pull_secret"] = module.params.get("pull_secret")
+        # Get pull_secret directly from environment like clusters.py does
+        import os
+        pull_secret = os.environ.get("AI_PULL_SECRET")
+        if pull_secret:
+            data["pull_secret"] = pull_secret
     
     # Optional fields
     if module.params.get("openshift_version"):

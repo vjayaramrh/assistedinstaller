@@ -13,7 +13,6 @@
       infra_envs:
         state: present
         name: "test-infra-env"
-        pull_secret: "{{ pull_secret }}"
         openshift_version: "4.19"
         cpu_architecture: "x86_64"
         image_type: "minimal-iso"
@@ -28,7 +27,6 @@
       infra_envs:
         state: present
         name: "advanced-infra-env"
-        pull_secret: "{{ pull_secret }}"
         openshift_version: "4.19"
         cpu_architecture: "x86_64"
         image_type: "full-iso"
