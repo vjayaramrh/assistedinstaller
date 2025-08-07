@@ -1,0 +1,38 @@
+- name: Test component_versions
+  hosts: localhost
+  tasks:
+    - name: List all component versions
+      component_versions:
+      register: all_component_versions_result
+
+    - name: Print all component versions
+      ansible.builtin.debug:
+        var: all_component_versions_result
+
+    - name: List component versions for OpenShift 4.18
+      component_versions:
+        openshift_version: "4.18"
+      register: openshift_418_component_versions_result
+
+    - name: Print OpenShift 4.18 component versions
+      ansible.builtin.debug:
+        var: openshift_418_component_versions_result
+
+    - name: List component versions for x86_64 architecture
+      component_versions:
+        cpu_architecture: x86_64
+      register: x86_64_component_versions_result
+
+    - name: Print x86_64 component versions
+      ansible.builtin.debug:
+        var: x86_64_component_versions_result
+
+    - name: List component versions for OpenShift 4.18 on x86_64
+      component_versions:
+        openshift_version: "4.18"
+        cpu_architecture: x86_64
+      register: filtered_component_versions_result
+
+    - name: Print filtered component versions
+      ansible.builtin.debug:
+        var: filtered_component_versions_result
